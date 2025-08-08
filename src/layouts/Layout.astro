@@ -1,0 +1,361 @@
+---
+import Header from '../components/Header.astro';
+import About from '../components/About.astro';
+import '../styles/global.css';
+import Skills from '../components/Skills.astro';
+import Proyects from '../components/Proyects.astro';
+---
+<html lang="es" class="preload">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Portafolio</title>
+  </head>
+  <body>
+    <!-- Fondo animado con canvas -->
+    <canvas id="led-background" class="led-bg"></canvas>
+    <!-- Encabezado del sitio -->
+    <Header />
+    <main>
+      <!-- Sección "Acerca de" -->
+      <About />
+      <Skills />
+      <Proyects />
+      <!-- Slot para contenido adicional -->
+      <slot />
+    </main>
+
+    <script type="module">
+      let typingTimer = null;
+
+      // Espera a que el DOM esté listo
+      document.addEventListener('DOMContentLoaded', async () => {
+        // ==========================
+        // 0. Efecto header al hacer scroll
+        // ==========================
+        const header = document.querySelector('.header');
+        const headerLed = document.querySelector('.header-led-decoration');
+
+        window.addEventListener('scroll', () => {
+          if (window.scrollY > 50) {
+            header?.classList.add('scroll-small');
+            headerLed?.classList.add('scroll-small');
+          } else {
+            header?.classList.remove('scroll-small');
+            headerLed?.classList.remove('scroll-small');
+          }
+        });
+        // ==========================
+        // 1. Gestión de idioma
+        // ==========================
+        const langToggle = document.getElementById('lang-toggle');
+        const langSlider = document.getElementById('lang-slider');
+        const langKey = localStorage.getItem('lang') || 'es';
+
+        // ==========================
+        // 2. Tema oscuro
+        // ==========================
+        const btn = document.getElementById('toggle-dark');
+        const isDark = localStorage.getItem('theme') === 'dark';
+        if (isDark) document.body.classList.add('dark');
+        btn?.addEventListener('click', () => {
+          document.body.classList.toggle('dark');
+          const isNowDark = document.body.classList.contains('dark');
+          localStorage.setItem('theme', isNowDark ? 'dark' : 'light');
+        });
+
+        // ==========================
+        // 3. Traducciones dinámicas
+        // ==========================
+        let translations = {};
+        try {
+          const res = await fetch('/lang.json');
+          translations = await res.json();
+        } catch (err) {
+          console.error('Error cargando lang.json:', err);
+        }
+
+        applyLang(langKey);
+        highlightLang(langKey);
+        slideTo(langKey);
+        startTypingEffectFromLang(langKey);
+
+        
+        langToggle?.addEventListener('click', () => {
+          const currentLang = localStorage.getItem('lang') || 'es';
+          const newLang = currentLang === 'es' ? 'en' : 'es';
+          localStorage.setItem('lang', newLang);
+          applyLang(newLang);
+          highlightLang(newLang);
+          slideTo(newLang);
+          startTypingEffectFromLang(newLang);
+        });
+
+        // Aplica las traducciones al DOM
+        function applyLang(langKey) {
+          const t = translations?.[langKey];
+          if (!t) return;
+          document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (key && t[key]) el.textContent = t[key];
+          });
+        }
+
+        // Resalta el idioma seleccionado
+        function highlightLang(langKey) {
+          document.querySelectorAll('.idioma-opcion').forEach(el => el.classList.remove('activo'));
+          document.getElementById(`lang-${langKey}`)?.classList.add('activo');
+        }
+
+        // Mueve el slider visual del idioma
+        function slideTo(langKey) {
+          langSlider.style.left = langKey === 'es' ? '0%' : '50%';
+        }
+
+        function typeEffect(element, words, delay = 1500) {
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function type() {
+          const currentWord = words[wordIndex];
+          const visibleText = currentWord.substring(0, charIndex);
+          element.textContent = visibleText;
+
+          if (!isDeleting && charIndex < currentWord.length) {
+            charIndex++;
+            setTimeout(type, 80);
+          } else if (isDeleting && charIndex > 0) {
+            charIndex--;
+            setTimeout(type, 40);
+          } else {
+            isDeleting = !isDeleting;
+            if (!isDeleting) wordIndex = (wordIndex + 1) % words.length;
+            setTimeout(type, delay);
+          }
+        }
+
+        type();
+      }
+
+      function typeEffect(element, words, delay = 1500) {
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function type() {
+          const currentWord = words[wordIndex];
+          const visibleText = currentWord.substring(0, charIndex);
+          element.textContent = visibleText;
+
+          if (!isDeleting && charIndex < currentWord.length) {
+            charIndex++;
+            typingTimer = setTimeout(type, 80);
+          } else if (isDeleting && charIndex > 0) {
+            charIndex--;
+            typingTimer = setTimeout(type, 40);
+          } else {
+            isDeleting = !isDeleting;
+            if (!isDeleting) wordIndex = (wordIndex + 1) % words.length;
+            typingTimer = setTimeout(type, delay);
+          }
+        }
+
+        type();
+      }
+
+      function startTypingEffectFromLang(lang) {
+        const typewriterEl = document.getElementById('typewriter-name');
+        const words = translations?.[lang]?.about_titles || ['Nombre'];
+
+        if (typingTimer) {
+          clearTimeout(typingTimer);
+          typingTimer = null;
+        }
+
+        if (typewriterEl) {
+          typewriterEl.textContent = '';
+          typeEffect(typewriterEl, words);
+        }
+      }
+      });
+
+      // ==========================
+      // 4. Menú desplegable de CV
+      // ==========================
+      const cvToggle = document.getElementById('cv-toggle');
+      const cvOptions = document.getElementById('cv-options');
+      if (cvToggle && cvOptions) {
+        let isOpen = false;
+        cvToggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          isOpen = !isOpen;
+          cvOptions.style.display = isOpen ? 'block' : 'none';
+        });
+        document.addEventListener('click', () => {
+          isOpen = false;
+          cvOptions.style.display = 'none';
+        });
+        cvOptions.addEventListener('click', (e) => {
+          e.stopPropagation(); // Evita que se cierre al hacer clic en una opción
+        });
+      }
+
+      // ==========================
+      // 5. Copiar correo al portapapeles
+      // ==========================
+      const copyBtn = document.getElementById('copy-email');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const email = document.querySelector('.email-text')?.textContent;
+          if (email) {
+            navigator.clipboard.writeText(email).then(() => {
+              copyBtn.textContent = "✅";
+              setTimeout(() => (copyBtn.textContent = "📋"), 1500);
+            });
+          }
+        });
+      }
+
+      // ==========================
+      // 6. Fondo animado con canvas
+      // ==========================
+      const canvas = document.getElementById('led-background');
+      if (canvas) {
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight * 3; // Aumenta la altura para un efecto más amplio
+
+        const mouse = { x: -9999, y: -9999 };
+        const shapes = [];
+        const total = 100;
+
+        // Ajusta el tamaño del canvas al redimensionar la ventana
+        window.addEventListener('resize', () => {
+          width = canvas.width = window.innerWidth;
+          height = canvas.height = window.innerHeight * 3; // Mantiene la altura aumentada
+        });
+
+        // Actualiza la posición del mouse
+        window.addEventListener('mousemove', e => {
+          mouse.x = e.clientX;
+          mouse.y = e.clientY;
+        });
+        
+        // Efecto PARALLAX al hacer scroll
+        window.addEventListener('scroll', () => {
+          const scrollY = window.scrollY;
+          const parallaxStrength = -0.3; // Ajusta el efecto aquí
+          canvas.style.transform = `translateY(${scrollY * parallaxStrength}px)`;
+        });
+
+        // Verifica si el tema es oscuro
+        const isDark = () => document.body.classList.contains('dark');
+        const shapeTypes = ['triangle', 'circle', 'hex'];
+
+        // Crea una nueva forma aleatoria
+        function createShape() {
+          return {
+            x: Math.random() * width,
+            y: Math.random() * height,
+            size: 10 + Math.random() * 20,
+            speed: 0.01 + Math.random() * 0.02,
+            angle: Math.random() * Math.PI * 2,
+            depth: 0.3 + Math.random() * 0.7,
+            type: shapeTypes[Math.floor(Math.random() * shapeTypes.length)]
+          };
+        }
+
+        // Inicializa las formas
+        for (let i = 0; i < total; i++) {
+          shapes.push(createShape());
+        }
+
+        // Dibuja un hexágono
+        function drawHex(x, y, r, angle) {
+          ctx.beginPath();
+          for (let i = 0; i < 6; i++) {
+            const a = angle + (i * Math.PI) / 3;
+            const px = x + Math.cos(a) * r;
+            const py = y + Math.sin(a) * r;
+            ctx.lineTo(px, py);
+          }
+          ctx.closePath();
+          ctx.stroke();
+        }
+
+        // Dibuja todas las formas y conexiones
+        function draw() {
+          ctx.clearRect(0, 0, width, height);
+          const t = Date.now() * 0.002;
+
+          // Dibuja cada forma
+          for (let i = 0; i < shapes.length; i++) {
+            const s = shapes[i];
+            const dx = mouse.x - s.x;
+            const dy = mouse.y - s.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            const influence = Math.max(0, 150 - dist) / 150;
+
+            const rBase = isDark() ? 90 : 30;
+            const r = rBase + 120 * Math.sin(s.x * 0.01 + t);
+            const g = rBase + 120 * Math.sin(s.y * 0.01 + t + 2);
+            const b = rBase + 120 * Math.sin((s.x + s.y) * 0.01 + t + 4);
+
+            const size = s.size * (1 + influence * 1.2);
+            const angle = s.angle + s.speed * t;
+
+            ctx.strokeStyle = `rgba(${r},${g},${b},${0.4 + influence})`;
+            ctx.lineWidth = 1 + influence * 2;
+
+            ctx.beginPath();
+            switch (s.type) {
+              case 'triangle':
+                ctx.moveTo(s.x + Math.cos(angle) * size, s.y + Math.sin(angle) * size);
+                ctx.lineTo(s.x + Math.cos(angle + 2) * size, s.y + Math.sin(angle + 2) * size);
+                ctx.lineTo(s.x + Math.cos(angle + 4) * size, s.y + Math.sin(angle + 4) * size);
+                ctx.closePath();
+                break;
+              case 'circle':
+                ctx.arc(s.x, s.y, size * 0.6, 0, Math.PI * 2);
+                break;
+              case 'hex':
+                drawHex(s.x, s.y, size * 0.6, angle);
+                break;
+            }
+            ctx.stroke();
+          }
+
+          // Dibuja conexiones entre formas cercanas
+          for (let i = 0; i < shapes.length; i++) {
+            for (let j = i + 1; j < shapes.length; j++) {
+              const a = shapes[i];
+              const b = shapes[j];
+              const dx = a.x - b.x;
+              const dy = a.y - b.y;
+              const d = Math.sqrt(dx * dx + dy * dy);
+              if (d < 100) {
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                const r = 50 + 100 * Math.sin((a.x + b.x) * 0.01 + t);
+                const g = 50 + 100 * Math.sin((a.y + b.y) * 0.01 + t + 2);
+                const bC = 50 + 100 * Math.sin((a.x + b.y) * 0.01 + t + 4);
+                ctx.strokeStyle = `rgba(${r},${g},${bC},0.15)`;
+                ctx.lineWidth = 0.6;
+                ctx.stroke();
+              }
+            }
+          }
+
+          requestAnimationFrame(draw);
+        }
+
+        draw();
+      }
+      
+      
+
+    </script>
+  </body>
+</html>

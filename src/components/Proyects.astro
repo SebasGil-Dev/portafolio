@@ -1,0 +1,89 @@
+---
+import 'swiper/css/bundle';
+---
+<section id="proyectos" class="projects-section">
+  <!-- LED decorativo como el del header -->
+  
+
+  <h2 class="projects-title" data-i18n="projects_title"></h2>
+
+  <div class="carousel-layout">
+    <div class="projects-led-decoration" aria-hidden="true"></div>
+    <!-- Flecha izquierda -->
+    <button class="carousel-arrow left swiper-button-prev"></button>
+
+    <!-- Carrusel Swiper -->
+    <div class="swiper-container-wrapper">
+      <div class="swiper">
+        <div class="swiper-wrapper">
+
+          <!-- Proyecto 1 -->
+          <div class="swiper-slide">
+            <div class="card-wrapper">
+              <div class="card-back"></div>
+              <div class="card-front">
+                <div class="card-content">
+                  <h3 data-i18n="project_java_title"></h3>
+                  <p data-i18n="project_java_desc"></p>
+                  <div class="tags">
+                    <span>HTML</span><span>CSS</span><span>JavaScript</span>
+                  </div>
+                </div>
+                <div class="project-image">
+                  <img src="/icons/java.svg" data-i18n-alt="project_java_alt" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Proyecto 2 -->
+          <div class="swiper-slide">
+            <div class="card-wrapper">
+              <div class="card-back"></div>
+              <div class="card-front">
+                <div class="card-content">
+                  <h3 data-i18n="project_astro_title"></h3>
+                  <p data-i18n="project_astro_desc"></p>
+                  <div class="tags">
+                    <span>HTML</span><span>CSS</span><span>JavaScript</span>
+                  </div>
+                </div>
+                <div class="project-image">
+                  <img src="/icons/astro.svg" data-i18n-alt="project_astro_alt" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Proyecto 3 -->
+          <div class="swiper-slide">
+            <div class="card-wrapper">
+              <div class="card-back"></div>
+              <div class="card-front">
+                <div class="card-content">
+                  <h3 data-i18n="project_sql_title"></h3>
+                  <p data-i18n="project_sql_desc"></p>
+                  <div class="tags">
+                    <span>HTML</span><span>CSS</span><span>JavaScript</span>
+                  </div>
+                </div>
+                <div class="project-image">
+                  <img src="/icons/sql.svg" data-i18n-alt="project_sql_alt" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Paginación -->
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+
+    <!-- Flecha derecha -->
+    <button class="carousel-arrow right swiper-button-next"></button>
+  </div>
+
+  <script type="module" src="/src/scripts/swiper-init.js"></script>
+</section>

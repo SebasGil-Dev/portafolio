@@ -1,0 +1,75 @@
+---
+// src/components/About.astro
+---
+
+<section id="about" class="about-section">
+  <div class="about-container">
+
+    {/* Imagen de perfil con efectos visuales */}
+    <div class="about-img-wrapper">
+      <div class="blob-aura"></div>      {/* Aura RGB fuera del clip */}
+      <div class="glass-bg"></div>        {/* Fondo de vidrio */}
+      <img src="/sobremi.png" alt="Imagen de perfil" class="about-image" />
+    </div>
+
+    {/* Contenido textual y acciones */}
+    <div class="about-text">
+
+      {/* Introducción alineada a la izquierda */}
+      <div class="about-intro">
+        <h1 class="about-greeting">
+          <span data-i18n="about_greeting"></span>
+          <span class="led-outline"><span id="typewriter-name" class="typewriter"></span></span>
+        </h1>
+        <p class="about-description" data-i18n="about_description"></p>
+      </div>
+
+      {/* Acciones: descarga de CV y copiar email */}
+      <div class="about-actions">
+
+        {/* Dropdown para descargar CV en diferentes idiomas */}
+        <div class="cv-dropdown">
+          <button class="cv-button" id="cv-toggle">
+            <span data-i18n="about_cv"></span> ⬇
+          </button>
+          <div class="cv-options" id="cv-options">
+            <a href="/cv-es.pdf" download data-i18n="cv_spanish">📄 Español</a>
+            <a href="/cv-en.pdf" download data-i18n="cv_english">📄 English</a>
+          </div>
+        </div>
+
+        {/* Cápsula para mostrar y copiar email */}
+        <div class="email-capsule">
+          <span class="email-text">sebastiangildev@gmail.com</span>
+          <button class="copy-btn" id="copy-email" title="Copiar correo">📋</button>
+        </div>
+      </div>
+
+      {/* Íconos sociales centrados */}
+      <div class="social-icons">
+
+        {/* GitHub: dos imágenes para modo claro/oscuro */}
+        <a href="https://github.com/SebasGil-Dev" target="_blank" aria-label="GitHub" class="github-btn">
+          <img src="/github-light.svg" alt="GitHub" class="github-icon light" />
+          <img src="/github-dark.svg" alt="GitHub" class="github-icon dark" />
+        </a>
+
+        {/* LinkedIn: solo las letras IN */}
+        <a href="https://www.linkedin.com/in/juan-sebastian-gil-coy-4b6ba7372/" target="_blank" aria-label="LinkedIn" class="linkedin-btn">
+          <span class="linkedin-text">in</span>
+        </a>
+      </div>
+
+    </div> {/* Fin about-text */}
+
+  </div> {/* Fin about-container */}
+
+  {/* SVG para el clipPath de la imagen */}
+  <svg width="0" height="0">
+    <defs>
+      <clipPath id="blobPath" clipPathUnits="objectBoundingBox">
+        <path d="M0.81,-0.63C0.93,-0.48,0.82,-0.24,0.66,-0.03C0.5,0.18,0.29,0.3,0.03,0.3C-0.23,0.3,-0.46,0.21,-0.55,0.05C-0.65,-0.11,-0.6,-0.35,-0.43,-0.5C-0.25,-0.65,0.03,-0.72,0.29,-0.7C0.55,-0.68,0.7,-0.78,0.81,-0.63Z" transform="scale(0.5) translate(1,1)" />
+      </clipPath>
+    </defs>
+  </svg>
+</section>
